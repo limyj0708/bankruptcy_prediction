@@ -1,0 +1,459 @@
+<!-- 기본 템플릿을 상속받는다 -->
+{% extends 'base.html' %}
+
+{% block head_extension %}
+<!-- Load plotly.js into the DOM -->
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static "main/search_result.css" %}">
+{% endblock head_extension %}
+
+{% block title %}
+기업부도예측시스템 - {{company_name}} 검색결과
+{% endblock title %}
+
+{% block content %}
+<div id='model_prediction'>
+  <h2 id='prediction_title'>{{company_name}} 부도예측결과</h2>
+</div>
+<hr>
+<div id='chart_container'>
+  <div id='news_data_news_num_and_bankruptcy_ratio' class='chart two_columns'></div>
+  <div id='annual_report_last_4_audit_last_3' class='table two_columns'>
+    <h2 id='finance_table_title'>{{company_name}} 최신 4개년 연간 사업보고서 실적</h2>
+    <h2 id='audit_table_title'>{{company_name}} 최신 3개 감사보고서 계속기업 부정의견 여부</h2>
+  </div>
+  <div id='closing_price' class='chart'><!-- Plotly chart will be drawn inside this DIV --></div>
+  <div id='trading_ratio_sell_monthly' class='chart two_columns'></div>
+  <div id='trading_ratio_buy_monthly' class='chart two_columns'></div>
+</div>
+<script>
+let stock_data_closing_price = "{{stock_data_closing_price}}".replace(/&#x27;/g, "\"")
+let stock_data_trading_num_daily = "{{stock_data_trading_num_daily}}".replace(/&#x27;/g, "\"")
+let stock_data_trading_ratio_sell_montly = "{{stock_data_trading_ratio_sell_montly}}".replace(/&#x27;/g, "\"")
+let stock_data_trading_ratio_buy_montly = "{{stock_data_trading_ratio_buy_monthly}}".replace(/&#x27;/g, "\"")
+let news_data_news_num_and_bankruptcy_ratio = "{{news_data_news_num_and_bankruptcy_ratio}}".replace(/&#x27;/g, "\"")
+let finance_data_5years = "{{finance_data_5years}}".replace(/&#x27;/g, "\"")
+let audit_report_last_3 = "{{audit_report_last_3}}".replace(/&#x27;/g, "\"")
+let prediction_result = "{{predict_result}}".replace(/&#x27;/g, "\"")
+
+/*let data_obj_stock_data_trading_ratio_sell_daily = JSON.parse(stock_data_trading_ratio_sell_daily);
+let data_obj_stock_data_trading_ratio_sell_daily_f = data_obj_stock_data_trading_ratio_sell_daily[0];
+let data_obj_stock_data_trading_ratio_sell_daily_inv = data_obj_stock_data_trading_ratio_sell_daily[1];
+let data_obj_stock_data_trading_ratio_sell_daily_indi = data_obj_stock_data_trading_ratio_sell_daily[2];
+let stock_data_trading_ratio_sell_daily_for_chart = [data_obj_stock_data_trading_ratio_sell_daily_f, data_obj_stock_data_trading_ratio_sell_daily_inv, data_obj_stock_data_trading_ratio_sell_daily_indi] 
+*/
+
+let data_obj_stock_data_closing_price = JSON.parse(stock_data_closing_price);
+let data_obj_stock_data_trading_num_daily = JSON.parse(stock_data_trading_num_daily);
+data_obj_stock_data_trading_num_daily['marker']={opacity:[0.5]};
+let data_obj_stock_data_trading_ratio_sell_montly = JSON.parse(stock_data_trading_ratio_sell_montly);
+let data_obj_stock_data_trading_ratio_sell_montly_f = data_obj_stock_data_trading_ratio_sell_montly[0];
+let data_obj_stock_data_trading_ratio_sell_montly_inv = data_obj_stock_data_trading_ratio_sell_montly[1];
+let data_obj_stock_data_trading_ratio_sell_montly_indi = data_obj_stock_data_trading_ratio_sell_montly[2];
+let stock_data_trading_ratio_sell_montly_for_chart = [data_obj_stock_data_trading_ratio_sell_montly_f, data_obj_stock_data_trading_ratio_sell_montly_inv, data_obj_stock_data_trading_ratio_sell_montly_indi]
+
+let data_obj_stock_data_trading_ratio_buy_montly = JSON.parse(stock_data_trading_ratio_buy_montly);
+let data_obj_stock_data_trading_ratio_buy_montly_f = data_obj_stock_data_trading_ratio_buy_montly[0];
+let data_obj_stock_data_trading_ratio_buy_montly_inv = data_obj_stock_data_trading_ratio_buy_montly[1];
+let data_obj_stock_data_trading_ratio_buy_montly_indi = data_obj_stock_data_trading_ratio_buy_montly[2];
+let stock_data_trading_ratio_buy_montly_for_chart = [data_obj_stock_data_trading_ratio_buy_montly_f, data_obj_stock_data_trading_ratio_buy_montly_inv, data_obj_stock_data_trading_ratio_buy_montly_indi]
+
+let data_obj_news_data_news_num_and_bankruptcy_ratio = JSON.parse(news_data_news_num_and_bankruptcy_ratio)
+let news_data_news_num_and_bankruptcy_ratio_ratio = data_obj_news_data_news_num_and_bankruptcy_ratio[0][0]
+let news_data_news_num_and_bankruptcy_ratio_num = data_obj_news_data_news_num_and_bankruptcy_ratio[0][1]
+news_data_news_num_and_bankruptcy_ratio_num['marker']={opacity:[0.3]};
+
+let news_data_news_num_and_bankruptcy_ratio_live_3m = data_obj_news_data_news_num_and_bankruptcy_ratio[1][0]
+let news_data_news_num_and_bankruptcy_ratio_live_6m = data_obj_news_data_news_num_and_bankruptcy_ratio[1][1]
+let news_data_news_num_and_bankruptcy_ratio_live_1y = data_obj_news_data_news_num_and_bankruptcy_ratio[1][2]
+let news_data_news_num_and_bankruptcy_ratio_delisted_3m = data_obj_news_data_news_num_and_bankruptcy_ratio[2][0]
+let news_data_news_num_and_bankruptcy_ratio_delisted_6m = data_obj_news_data_news_num_and_bankruptcy_ratio[2][1]
+let news_data_news_num_and_bankruptcy_ratio_delisted_1y = data_obj_news_data_news_num_and_bankruptcy_ratio[2][2]
+news_data_news_num_and_bankruptcy_ratio_live_3m["name"] = "부도관련기사비율<br>생존기업3개월 전"
+news_data_news_num_and_bankruptcy_ratio_live_6m["name"] = "부도관련기사비율<br>생존기업 6개월 전"
+news_data_news_num_and_bankruptcy_ratio_live_1y["name"] = "부도관련기사비율<br>생존기업 12개월 전"
+news_data_news_num_and_bankruptcy_ratio_delisted_3m["name"] = "부도관련기사비율<br>부도기업 3개월 전"
+news_data_news_num_and_bankruptcy_ratio_delisted_6m["name"] = "부도관련기사비율<br>부도기업 6개월 전"
+news_data_news_num_and_bankruptcy_ratio_delisted_1y["name"] = "부도관련기사비율<br>부도기업 12개월 전"
+let news_data_news_num_and_bankruptcy_ratio_chart = [
+  news_data_news_num_and_bankruptcy_ratio_ratio
+  ,news_data_news_num_and_bankruptcy_ratio_num
+  ,news_data_news_num_and_bankruptcy_ratio_live_3m
+  ,news_data_news_num_and_bankruptcy_ratio_live_6m
+  ,news_data_news_num_and_bankruptcy_ratio_live_1y
+  ,news_data_news_num_and_bankruptcy_ratio_delisted_3m
+  ,news_data_news_num_and_bankruptcy_ratio_delisted_6m
+  ,news_data_news_num_and_bankruptcy_ratio_delisted_1y
+]
+
+let selectorOptions = {
+    buttons: [{
+        step: 'month',
+        stepmode: 'backward',
+        count: 1,
+        label: '1m'
+    }, {
+        step: 'month',
+        stepmode: 'backward',
+        count: 3,
+        label: '3m'
+    }, {
+        step: 'month',
+        stepmode: 'backward',
+        count: 6,
+        label: '6m'
+    }, {
+        step: 'year',
+        stepmode: 'backward',
+        count: 1,
+        label: 'YTD'
+    }]
+};
+
+let layout_stock_data_closing_price = {
+  title:{
+    text : "{{company_name}}" + " 종가 & 거래량",
+    font: {
+        family: 'NanumBarunGothic',
+        size: 24,
+    }
+  },
+  xaxis: {
+    title: '날짜',
+    rangeselector: selectorOptions,
+  },
+  yaxis: {
+    title: '종가'
+    ,tickfont:{
+        color:'#1f77b4'
+    }
+  },
+  yaxis2:{
+    title: '거래량',
+    side: 'right',
+    overlaying: 'y',
+    showgrid: false
+    ,tickfont:{
+        color:'#bd5800'
+    }
+  },
+  legend: {
+    orientation: "h",
+    yanchor:'top',
+    xanchor:'center',
+    x: 0.5,
+    y: 1.15,
+    font: {
+        size:14
+    }
+  }
+};
+
+let layout_stock_data_trading_ratio_sell_monthly = {
+  title:{
+    text : "{{company_name}}" + " 거래주체별 1개월 매도수량비율 ",
+    font: {
+        family: 'NanumBarunGothic',
+        size: 24,
+    }
+  },
+  xaxis: {
+    title: '날짜',
+    type: 'category',
+    autorange: 'reversed',
+  },
+  yaxis: {
+    title: '매도비율'
+  },
+  legend: {
+    orientation: "h",
+    yanchor:'top',
+    xanchor:'center',
+    x: 0.5,
+    y: 1.15,
+    font: {
+        size:14
+    }
+  }
+};
+
+let layout_stock_data_trading_ratio_buy_monthly = {
+  title:{
+    text : "{{company_name}}" + " 거래주체별 1개월 매수수량비율 ",
+    font: {
+        family: 'NanumBarunGothic',
+        size: 24,
+    }
+  },
+  xaxis: {
+    title: '날짜',
+    type: 'category',
+    autorange: 'reversed',
+  },
+  yaxis: {
+    title: '매수비율'
+  },
+  legend: {
+    orientation: "h",
+    yanchor:'top',
+    xanchor:'center',
+    x: 0.5,
+    y: 1.15,
+    font: {
+        size:14
+    }
+  }
+};
+
+let layout_news_data_news_num_and_bankruptcy_ratio = {
+  title:{
+    text : "{{company_name}}" + " 부도기사비율 & 전체 기사 수",
+    font: {
+        family: 'NanumBarunGothic',
+        size: 24,
+    }
+  },
+  xaxis: {
+    title: '',
+    autorange: 'reversed'
+  },
+  yaxis: {
+    title:{
+      text:'부도기사비율'
+      ,standoff:7
+    }
+    ,tickfont:{
+        color:'#1f77b4'
+    }
+    ,showline: true
+    ,linecolor:'#1f77b4'
+    ,zeroline: false
+    ,overlaying: 'y2',
+  }
+  ,yaxis2:{
+    title: {
+      text:'전체 기사 수'
+      ,standoff:7
+    },
+    side: 'right',
+    showgrid: false
+    ,tickfont:{
+        color:'#bd5800'
+    }
+    ,showline: true
+    ,linecolor:'#bd5800'
+  },
+  legend: {
+    x: 1.15,
+    y: 0.5,
+    font: {
+        size:14
+    }
+  },
+  barmode: 'group',
+};
+
+if ((window.innerWidth <= 1300) && (window.innerWidth >= 1200)) {
+  layout_news_data_news_num_and_bankruptcy_ratio["legend"]["x"] = 1.3
+}
+
+let config = {modeBarButtonsToRemove: ['toImage'], responsive: true};
+
+Plotly.newPlot('closing_price', [data_obj_stock_data_closing_price, data_obj_stock_data_trading_num_daily], layout_stock_data_closing_price, config);
+Plotly.newPlot('trading_ratio_sell_monthly', stock_data_trading_ratio_sell_montly_for_chart, layout_stock_data_trading_ratio_sell_monthly, config);
+Plotly.newPlot('trading_ratio_buy_monthly', stock_data_trading_ratio_buy_montly_for_chart, layout_stock_data_trading_ratio_buy_monthly, config);
+Plotly.newPlot('news_data_news_num_and_bankruptcy_ratio', news_data_news_num_and_bankruptcy_ratio_chart, layout_news_data_news_num_and_bankruptcy_ratio, config);
+
+
+function insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
+let data_finance_data_5years = JSON.parse(finance_data_5years);
+let finance_table = document.createElement("table");
+finance_table.setAttribute("id", "finance_table");
+let table_div = document.getElementById("annual_report_last_4_audit_last_3");
+insertAfter(finance_table, finance_table_title)
+
+let th = ''
+let table_th_text = ''
+
+let i=0;
+for (; i<5; i++){
+  th = document.createElement("th");
+  if (i == 0){
+    table_th_text = document.createTextNode('');
+  } else {
+    table_th_text = document.createTextNode(data_finance_data_5years["회계년"][i-1]);
+  }
+
+  if (table_th_text.data == 'undefined'){
+    table_th_text = document.createTextNode('-');
+  }
+  finance_table.appendChild(th);
+  th.appendChild(table_th_text);
+}
+
+let column_array = Object.keys(data_finance_data_5years);
+let table_cell_text = ''
+
+let j=0;
+let k=0;
+
+for (; j<9; j++){
+  let tr = document.createElement("tr");
+  tr.setAttribute("id", "tr"+(j+1));
+  tr.setAttribute("class", "finance_tr");
+  finance_table.appendChild(tr);
+  k=0;
+  for (; k<5; k++){
+    let td = document.createElement("td");
+    if (k == 0){
+      table_cell_text = document.createTextNode(column_array[j+1]);
+    } else {
+      table_cell_text = document.createTextNode(data_finance_data_5years[column_array[j+1]][k-1]);
+    }
+
+    if (table_cell_text.data == 'undefined'){
+      table_cell_text = document.createTextNode('-');
+    }
+
+    td.appendChild(table_cell_text);
+    tr.appendChild(td);
+  }
+}
+
+
+let data_audit_report_last_3 = JSON.parse(audit_report_last_3);
+let audit_report_table = document.createElement("table");
+audit_report_table.setAttribute("id", "audit_report_table");
+table_div.appendChild(audit_report_table);
+
+let audit_table_title = document.getElementById("audit_table_title");
+insertAfter(audit_report_table, audit_table_title);
+
+let l=0;
+let m=0;
+
+for (; l<3 ; l++){
+  th = document.createElement("th");
+  th.setAttribute("id", "audit_th"+(l+1));
+  table_th_text = document.createTextNode(data_audit_report_last_3["year_month"][l])
+  audit_report_table.appendChild(th);
+  th.appendChild(table_th_text);
+}
+
+let tr_audit = document.createElement("tr");
+audit_report_table.appendChild(tr_audit);
+
+for (; m<3; m++){
+  let td = document.createElement("td");
+  if (document.getElementById("audit_th"+(m+1)).textContent == '-'){
+    table_cell_text = document.createTextNode('감사보고서가 없음');
+  } else {
+    table_cell_text = document.createTextNode(data_audit_report_last_3["n_opinion"][m]);
+  }
+  
+  td.appendChild(table_cell_text);
+  tr_audit.appendChild(td);
+}
+
+let data_obj_prediction_result = ''
+
+if (prediction_result == 'None'){
+  data_obj_prediction_result = {'result_6m':'-', 'result_3m':'-', 'result_1y':'-', 'proba_6m_true':'-', 'proba_3m_true':'-', 'proba_1y_true':'-'};
+} else {
+  data_obj_prediction_result = JSON.parse(prediction_result);
+}
+
+let prediction_table = document.createElement("table");
+prediction_table.setAttribute("id", "prediction_table");
+insertAfter(prediction_table, prediction_title)
+
+let prediction_idx = 0;
+for (; prediction_idx < 4; prediction_idx++){
+  th = document.createElement("th");
+  th_text_array = ['부도예측', '1년 후', '6개월 후', '3개월 후'];
+  table_th_text = document.createTextNode(th_text_array[prediction_idx]);
+  prediction_table.appendChild(th);
+  th.appendChild(table_th_text);
+}
+
+let prediction_idx_tr = 0;
+let boolean_to_hangul_cache = ''
+table_cell_text = ''
+
+for (; prediction_idx_tr < 2; prediction_idx_tr++){
+  let prediction_tr = document.createElement("tr");
+  if (prediction_idx_tr == 0) {
+    prediction_tr.setAttribute("id", "bool")
+  } else {
+    prediction_tr.setAttribute("id", "proba")
+  }
+  prediction_table.appendChild(prediction_tr);
+
+  for (prediction_idx=0; prediction_idx < 4; prediction_idx++){
+    let td = document.createElement("td");
+    if (prediction_idx_tr == 0){
+      switch (prediction_idx){
+        case 0:
+          table_cell_text = document.createTextNode("부도/생존여부");
+          break;
+        case 1:
+          if (data_obj_prediction_result['result_1y'] == 'True'){
+            boolean_to_hangul_cache = '부도';
+          } else if (data_obj_prediction_result['result_1y'] == 'False'){
+            boolean_to_hangul_cache = '생존';
+          } else if (data_obj_prediction_result['result_1y'] == '-'){
+            boolean_to_hangul_cache = '충분한 데이터 없음';
+          }
+          table_cell_text = document.createTextNode(boolean_to_hangul_cache);
+          break;
+        case 2:
+          if (data_obj_prediction_result['result_6m'] == 'True'){
+            boolean_to_hangul_cache = '부도';
+          } else if (data_obj_prediction_result['result_6m'] == 'False') {
+            boolean_to_hangul_cache = '생존';
+          } else if (data_obj_prediction_result['result_6m'] == '-'){
+            boolean_to_hangul_cache = '충분한 데이터 없음';
+          }
+          table_cell_text = document.createTextNode(boolean_to_hangul_cache);
+          break;
+        case 3:
+          if (data_obj_prediction_result['result_3m'] == 'True'){
+            boolean_to_hangul_cache = '부도';
+          } else if (data_obj_prediction_result['result_3m'] == 'False') {
+            boolean_to_hangul_cache = '생존';
+          } else if (data_obj_prediction_result['result_3m'] == '-'){
+            boolean_to_hangul_cache = '충분한 데이터 없음';
+          }
+          table_cell_text = document.createTextNode(boolean_to_hangul_cache);
+          break;
+      }
+    } else {
+        switch (prediction_idx){
+          case 0:
+            table_cell_text = document.createTextNode("측정된 부도확률(%)");
+            break;
+          case 1:
+            table_cell_text = document.createTextNode(data_obj_prediction_result['proba_1y_true']);
+            break;
+          case 2:
+            table_cell_text = document.createTextNode(data_obj_prediction_result['proba_6m_true']);
+            break;
+          case 3:
+            table_cell_text = document.createTextNode(data_obj_prediction_result['proba_3m_true']);
+            break;
+        }
+    }
+    td.appendChild(table_cell_text);
+    prediction_tr.appendChild(td);
+  }
+}
+
+
+
+
+</script>
+{% endblock content %}

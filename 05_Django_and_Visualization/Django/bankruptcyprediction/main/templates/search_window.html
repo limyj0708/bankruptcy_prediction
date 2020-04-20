@@ -1,0 +1,47 @@
+<!-- 기본 템플릿을 상속받는다 -->
+{% extends 'base.html' %}
+{% block head_extension %}
+  {% load static %}
+  <link rel="stylesheet" href="{% static "main/search_window.css" %}">
+{% endblock head_extension %}
+{% block content %}
+{% load static %}
+<div id='total_container'>
+  <div id='logo'>
+    <h1 style="display:inline-block;">&nbsp;&nbsp;기업부도예측 with 머신러닝 (& 지표 시각화)</h1>
+  </div>
+  <div id="all-form">
+    <form id="form" class="form" action="{% url 'search_result' %}" method='post'>
+      {% csrf_token %}
+      <div class="input-field first-wrap">
+        {{ form }}
+      </div>
+      <div class="input-field second-wrap">
+        <button class="btn-search" type="submit">검색</button>
+        <button class="btn-search" type="button" onclick="random_input_submit();">아무 기업이나 보기</button>
+      </div>
+    </form>
+  </div>
+  <p id="caution"> 본 프로젝트에는 2019/01/10을 최신 기준으로 하여,<br>
+    각 상장기업 당 과거 3년치의 공시 재무제표,<br>
+    1년치의 주식 데이터 / 거시 데이터 / 경제지 기사 데이터가 사용되었습니다.<br>
+  </p>
+  <p id=caution_red>해당 기업에 대한 충분한 양의 자료가 없는 경우,<br>부도예측이 출력되지 않고, 기본 지표만 출력됩니다.</p>
+  <hr class = "line">
+  <div id='goto_somewhere'>
+    <figure class='external_logo'>
+      <a href="https://github.com/limyj0708/bankruptcy_prediction">
+        <img id='github_icon' src="{% static "main/GitHub_Logo.png" %}" alt="Github_바로가기">
+      </a>
+      <figcaption>프로젝트 Github</figcaption>
+    </figure>
+    <figure class='external_logo'>
+      <a href="https://www.linkedin.com/in/young-jin-lim-b499a0111/">
+        <img id='ln_icon' src="{% static "main/LI-In-Bug.png" %}" alt="LinkedIn_바로가기">
+      </a>
+      <figcaption>만든 사람 프로필</figcaption>
+    </figure>
+  </div>
+</div>
+<script type="text/javascript" src="{% static "main/js/random_search.js" %}"></script>
+{% endblock content %}

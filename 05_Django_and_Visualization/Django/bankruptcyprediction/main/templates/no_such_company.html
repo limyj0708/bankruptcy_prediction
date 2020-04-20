@@ -1,0 +1,15 @@
+<!-- 기본 템플릿을 상속받는다 -->
+{% extends 'base.html' %}
+
+{% block head_extension %}
+{% endblock head_extension %}
+
+{% block title %}
+상장사 중에서, 그런 기업은 없습니다!
+{% endblock title %}
+
+{% block content %}
+<h1>기업명 : {{company_name}}</h1>
+<h1> 상장사 중에서, 그런 기업은 없습니다! </h1>
+<h1> 뒤로 가셔서 다른 기업을 검색해 주세요!</h1>
+{% endblock content %}

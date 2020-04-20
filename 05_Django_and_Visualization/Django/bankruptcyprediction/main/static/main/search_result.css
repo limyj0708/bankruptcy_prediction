@@ -1,0 +1,130 @@
+@font-face {
+  font-family: 'NanumBarunGothic';
+  src:
+    url('NanumBarunGothic.ttf')
+}
+
+
+body {
+  margin-bottom:30px;
+}
+
+hr {
+  width:95%;
+  color:#C1C3D1;
+}
+
+#model_prediction{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+}
+
+#prediction_title{
+  text-align: center;
+  font-size: 33px;
+  margin-bottom: 10px;
+}
+
+#chart_container{
+  font-family: NanumBarunGothic;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#closing_price{
+  width:100%;
+}
+
+#news_data_news_num_and_bankruptcy_ratio{
+  height:600px;
+}
+
+#annual_report_last_4_audit_last_3{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+}
+
+#finance_table_title{
+  text-align: center;
+  margin-top:28px;
+  margin-bottom:0px;
+  font-weight: normal;
+  color:#444444;
+}
+
+#audit_table_title{
+  text-align: center;
+  font-weight: normal;
+  margin-bottom:0px;
+  color:#444444;
+}
+
+#prediction_table, #annual_report_last_4_audit_last_3 > table {
+  text-align: center;
+  background: white;
+  border-radius:3px;
+  border-collapse: collapse;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  width: 90%;
+  /*box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);*/
+  animation: float 5s infinite;
+}
+
+#prediction_table{
+  width: 80%;
+  max-width: 1000px;
+}
+
+#prediction_table > th ,#annual_report_last_4_audit_last_3 > table > th {
+  padding:5px;
+  padding-top:5px;
+  padding-bottom:5px;
+  color:#D5DDE5;
+  font-size:20px;
+  background:#444b5b;
+  border-bottom:4px solid #9ea7af;
+  border-right: 1px solid #343a45;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+#prediction_table > tr ,#annual_report_last_4_audit_last_3 > table > tr {
+  border: 1px solid #C1C3D1;
+  font-size:16px;
+  font-weight:normal;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+ 
+#prediction_table > tr:hover td, #annual_report_last_4_audit_last_3 > table > tr:hover td {
+  background:#4E5066;
+  color:#FFFFFF;
+}
+
+#prediction_table > tr > td, #annual_report_last_4_audit_last_3 > table > tr > td {
+  background:#FFFFFF;
+  padding:5px;
+  padding-top:5px;
+  padding-bottom:5px;
+  vertical-align:middle;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #C1C3D1;
+}
+
+@media screen and (min-width: 1200px) { 
+  .two_columns{
+    width:48%;
+  }
+}
+
+@media screen and (max-width: 1199px) { 
+  .two_columns{
+    width:100%;
+  }
+}

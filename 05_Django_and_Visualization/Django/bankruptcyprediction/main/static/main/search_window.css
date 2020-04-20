@@ -1,0 +1,189 @@
+@font-face {
+    font-family: 'NanumBarunGothic';
+    src: url(NanumBarunGothic.ttf);
+}
+
+html, body{
+  height:100%;
+}
+
+body{
+  margin-top:calc(5vh + 100px);
+}
+
+.line{
+  width:80%;
+  margin-top:20px;
+  margin-bottom:20px;
+  color:#f2f2f2;
+}
+
+#total_container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+#logo
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left:15px;
+  margin-right:15px;
+  font-size: 24px;
+}
+
+#caution {
+  text-align: center;
+  margin-top: 25px;
+  margin-bottom: 0px;
+}
+
+#caution_red{
+  text-align: center;
+  margin-top:0px;
+  margin-bottom: 0px;
+  color: darkred;
+  font-size:18px;
+}
+
+h1{
+  margin:0;
+}
+
+
+/*form ======================*/
+#all-form{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  margin-top :20px;
+}
+
+#form{
+  display:block;
+  flex-grow: 1;
+  min-width: 800px;
+}
+
+.input-field.first-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#id_company_name{
+  flex-grow: 1;
+  min-width: 100px;
+  max-width: 700px;
+  font-size: 20px;
+  padding: 2px 50px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='0 0 25 25' fill-rule='evenodd'%3E%3Cpath d='M16.036 18.455l2.404-2.405 5.586 5.587-2.404 2.404zM8.5 2C12.1 2 15 4.9 15 8.5S12.1 15 8.5 15 2 12.1 2 8.5 4.9 2 8.5 2zm0-2C3.8 0 0 3.8 0 8.5S3.8 17 8.5 17 17 13.2 17 8.5 13.2 0 8.5 0zM15 16a1 1 0 1 1 2 0 1 1 0 1 1-2 0'%3E%3C/path%3E%3C/svg%3E");
+  background-color: #f9f9f9;
+  background-position:15px;
+  background-repeat: no-repeat;
+  background-size: auto;
+  border: 1px solid#dfe1e5;
+  border-top-color: rgb(223, 225, 229);
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-right-color:rgb(223, 225, 229);
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-bottom-color:rgb(223, 225, 229);
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-left-color:rgb(223, 225, 229);
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-image-outset: 0;
+  border-image-repeat: stretch;
+  border-image-slice: 100%;
+  border-image-source: none;
+  border-image-width: 1;
+  box-shadow: none;
+  border-radius: 24px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  border-bottom-left-radius: 24px;
+  z-index: 3;
+  height: 50px;
+  margin: 0 auto;
+  margin-top: 0px;
+  margin-right: 10%;
+  margin-bottom: 0px;
+  margin-left: 10%;
+  box-shadow:0px 0px 3px 0px inset;
+}
+
+#id_company_name:focus{
+  box-shadow:0px 0px 10px 0px;
+}
+
+.input-field.second-wrap{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.btn-search {
+  background-image: linear-gradient(top,#f5f5f5,#f1f1f1);
+  background-color: #f2f2f2;
+  border: 1px solid rgb(169, 169, 169);
+  border-radius: 4px;
+  color: #5F6368;
+  font-size: 16px;
+  padding: 0 16px;
+  line-height: 27px;
+  height: 40px;
+  min-width: 70px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  margin-left:5px;
+  margin-right:5px;
+}
+
+.btn-search:hover{
+  background-color: #5F6368;
+  border-color: #f2f2f2;
+  color:#f2f2f2;
+}
+
+/* goto_somewhere ======================*/
+#goto_somewhere{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top:0px;
+}
+
+.external_logo{
+  display: flex;
+  flex-flow: column;
+  margin-left:10px;
+  margin-right:10px;
+  margin-top:0px;
+  margin-bottom: 0px;
+}
+
+figcaption {
+  background-color: #f2f2f2;
+  color: #5F6368;
+  padding: 3px;
+  text-align: center;
+}
+
+#github_icon{
+  width: auto; height: auto;
+  max-height: 100px;
+}
+
+#ln_icon{
+  width: auto; height: auto;
+  max-height: 100px;
+}
