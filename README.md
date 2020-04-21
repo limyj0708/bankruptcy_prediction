@@ -3,6 +3,7 @@
 * **만든 사람 : 임영진**
 	* [LinkedIn](https://www.linkedin.com/in/young-jin-lim-b499a0111/)
 	* [Github_Page](https://limyj0708.github.io/)
+* **진행 기간** : 2020-01-01 ~ 2020-04-10
 
 
 ## 프로젝트 목표
